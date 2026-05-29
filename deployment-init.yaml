@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: init-demo-deployment
+  labels:
+    app: init-demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: init-demo
+  template:
+    metadata:
+      labels:
+        app: init-demo
+    spec:
+      initContainers:
+      - name: init-busybox
+        image: busybox:1.28
+        command: ['sh', '-c', 'until nslookup nginx-service; do echo waiting for nginx-service; sleep 2; done']
+      containers:
+      - name: nginx
+        image: nginx:latest
+        ports:
+        - containerPort: 80
